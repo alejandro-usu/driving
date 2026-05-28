@@ -764,22 +764,25 @@
       limitToLast,
     } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 
-    // ============================================================
-    // 🔧 PASTE YOUR FIREBASE CONFIG HERE — copy directly from the
-    //    Firebase Console (Project Settings → Your apps → SDK config).
-    //    Manual typing causes mismatched keys; copy-paste only.
-    // ============================================================
-    const firebaseConfig = {
-      apiKey: "PASTE_FROM_CONSOLE",
-      authDomain: "PASTE_FROM_CONSOLE",
-      databaseURL: "PASTE_FROM_CONSOLE",
-      projectId: "PASTE_FROM_CONSOLE",
-      storageBucket: "PASTE_FROM_CONSOLE",
-      messagingSenderId: "PASTE_FROM_CONSOLE",
-      appId: "PASTE_FROM_CONSOLE",
-    };
 
-    const app = initializeApp(firebaseConfig);
+    // Import the functions you need from the SDKs you need
+import { initializeApp } from "firebase/app";
+// TODO: Add SDKs for Firebase products that you want to use
+// https://firebase.google.com/docs/web/setup#available-libraries
+
+// Your web app's Firebase configuration
+const firebaseConfig = {
+  apiKey: "AIzaSyCsdU0umrAcCM06TrqXGdIwpYwVYA8jsfU",
+  authDomain: "driving-6e33f.firebaseapp.com",
+  projectId: "driving-6e33f",
+  storageBucket: "driving-6e33f.firebasestorage.app",
+  messagingSenderId: "693875057365",
+  appId: "1:693875057365:web:9edf1c7a56595cd9aaf85c"
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+
     const db = getDatabase(app);
     const reviewsRef = ref(db, "reviews");
 
