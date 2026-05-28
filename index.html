@@ -15,9 +15,6 @@
   />
 
   <style>
-    /* =====================================================
-       Design tokens
-       ===================================================== */
     :root {
       --bg: #0f0f0f;
       --surface: #181818;
@@ -26,7 +23,7 @@
       --text: #fafafa;
       --text-dim: #8a8a8a;
       --text-faint: #5a5a5a;
-      --accent: #ffd60a;        /* road-sign yellow */
+      --accent: #ffd60a;
       --accent-dark: #c9a800;
       --star-empty: #3a3a3a;
       --danger: #ff5247;
@@ -40,9 +37,6 @@
       --font-mono: "JetBrains Mono", ui-monospace, monospace;
     }
 
-    /* =====================================================
-       Reset & base
-       ===================================================== */
     *,
     *::before,
     *::after {
@@ -70,7 +64,6 @@
       -moz-osx-font-smoothing: grayscale;
     }
 
-    /* Subtle dashed-road accent at the top of the page */
     body::before {
       content: "";
       position: fixed;
@@ -101,16 +94,12 @@
       color: inherit;
     }
 
-    /* =====================================================
-       Layout
-       ===================================================== */
     .container {
       max-width: 560px;
       margin: 0 auto;
       padding-top: 48px;
     }
 
-    /* Staggered entrance */
     .fade-up {
       opacity: 0;
       transform: translateY(16px);
@@ -128,9 +117,6 @@
       }
     }
 
-    /* =====================================================
-       Hero
-       ===================================================== */
     .hero {
       text-align: center;
       margin-bottom: 32px;
@@ -170,9 +156,6 @@
       margin-right: auto;
     }
 
-    /* =====================================================
-       Summary card
-       ===================================================== */
     .summary {
       background: linear-gradient(180deg, var(--surface) 0%, var(--surface-2) 100%);
       border: 1px solid var(--border);
@@ -233,7 +216,6 @@
       font-weight: 700;
     }
 
-    /* Star SVGs */
     .star {
       width: 22px;
       height: 22px;
@@ -247,16 +229,7 @@
     .star.is-filled path {
       fill: var(--accent);
     }
-    .star.is-half {
-      position: relative;
-    }
-    .star.is-half .star-half-fill {
-      fill: var(--accent);
-    }
 
-    /* =====================================================
-       Submit button (sticky bottom on mobile)
-       ===================================================== */
     .submit-bar {
       position: fixed;
       left: 0;
@@ -286,17 +259,12 @@
       transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
     }
 
-    .submit-btn:hover {
-      background: #ffe149;
-    }
+    .submit-btn:hover { background: #ffe149; }
     .submit-btn:active {
       transform: translateY(1px);
       box-shadow: 0 6px 18px -8px rgba(255, 214, 10, 0.4);
     }
 
-    /* =====================================================
-       Reviews list
-       ===================================================== */
     .section-head {
       display: flex;
       align-items: baseline;
@@ -332,9 +300,7 @@
       transition: border-color 0.2s ease, transform 0.2s ease;
     }
 
-    .review:hover {
-      border-color: #3a3a3a;
-    }
+    .review:hover { border-color: #3a3a3a; }
 
     .review__top {
       display: flex;
@@ -343,14 +309,8 @@
       margin-bottom: 10px;
     }
 
-    .review__stars {
-      display: flex;
-      gap: 3px;
-    }
-    .review__stars .star {
-      width: 16px;
-      height: 16px;
-    }
+    .review__stars { display: flex; gap: 3px; }
+    .review__stars .star { width: 16px; height: 16px; }
 
     .review__time {
       font-size: 12px;
@@ -396,9 +356,6 @@
       font-size: 13px;
     }
 
-    /* =====================================================
-       Modal
-       ===================================================== */
     .modal {
       position: fixed;
       inset: 0;
@@ -441,12 +398,8 @@
       transition: transform 0.32s cubic-bezier(0.2, 0.7, 0.2, 1);
     }
 
-    .modal.is-open .modal__backdrop {
-      opacity: 1;
-    }
-    .modal.is-open .modal__sheet {
-      transform: translateY(0);
-    }
+    .modal.is-open .modal__backdrop { opacity: 1; }
+    .modal.is-open .modal__sheet { transform: translateY(0); }
 
     .modal__grabber {
       width: 40px;
@@ -487,17 +440,10 @@
       transform: scale(1.1);
       background: rgba(255, 214, 10, 0.08);
     }
-    .star-picker button:active {
-      transform: scale(0.95);
-    }
-    .star-picker .star {
-      width: 36px;
-      height: 36px;
-    }
+    .star-picker button:active { transform: scale(0.95); }
+    .star-picker .star { width: 36px; height: 36px; }
 
-    .field {
-      margin-bottom: 14px;
-    }
+    .field { margin-bottom: 14px; }
 
     .field label {
       display: block;
@@ -522,10 +468,7 @@
       font-family: var(--font-body);
     }
 
-    .field textarea {
-      min-height: 100px;
-      resize: vertical;
-    }
+    .field textarea { min-height: 100px; resize: vertical; }
 
     .field textarea:focus,
     .field input:focus {
@@ -584,19 +527,14 @@
       margin-top: 12px;
       text-align: center;
     }
-    .form-error.is-visible {
-      display: block;
-    }
+    .form-error.is-visible { display: block; }
 
-    /* Success state replaces the form briefly */
     .modal__success {
       display: none;
       text-align: center;
       padding: 12px 0 4px;
     }
-    .modal__success.is-visible {
-      display: block;
-    }
+    .modal__success.is-visible { display: block; }
     .modal__success svg {
       width: 56px;
       height: 56px;
@@ -613,16 +551,10 @@
       font-size: 14px;
     }
 
-    /* Lock body scroll when modal open */
-    body.modal-open {
-      overflow: hidden;
-    }
+    body.modal-open { overflow: hidden; }
 
-    /* Desktop tweaks */
     @media (min-width: 640px) {
-      .modal {
-        align-items: center;
-      }
+      .modal { align-items: center; }
       .modal__sheet {
         border-radius: 24px;
         border-bottom: 1px solid var(--border);
@@ -639,7 +571,6 @@
       .modal__grabber { display: none; }
     }
 
-    /* Footer */
     .footer {
       text-align: center;
       margin-top: 40px;
@@ -691,7 +622,6 @@
     </button>
   </div>
 
-  <!-- Modal -->
   <div class="modal" id="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
     <div class="modal__backdrop" id="modalBackdrop"></div>
     <div class="modal__sheet">
@@ -724,7 +654,6 @@
           />
         </div>
 
-        <!-- Honeypot field for bots (hidden from humans) -->
         <input
           type="text"
           id="hp_field"
@@ -765,37 +694,46 @@
       orderByChild,
       limitToLast,
     } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
-
-    // Import the functions you need from the SDKs you need
-import { initializeApp } from "firebase/app";
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
-
-// Your web app's Firebase configuration
-const firebaseConfig = {
-  apiKey: "AIzaSyCsdU0umrAcCM06TrqXGdIwpYwVYA8jsfU",
-  authDomain: "driving-6e33f.firebaseapp.com",
-  projectId: "driving-6e33f",
-  storageBucket: "driving-6e33f.firebasestorage.app",
-  messagingSenderId: "693875057365",
-  appId: "1:693875057365:web:9edf1c7a56595cd9aaf85c"
-};
-
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
     
-    const db = getDatabase(app);
-    const reviewsRef = ref(db, "reviews");
+    const firebaseConfig = {
+      apiKey: "AIzaSyCsdU0umrAcCM06TrqXGdIwpYwVYA8jsfU",
+      authDomain: "driving-6e33f.firebaseapp.com",
+      databaseURL: "https://driving-6e33f-default-rtdb.firebaseio.com",
+      projectId: "driving-6e33f",
+      storageBucket: "driving-6e33f.firebasestorage.app",
+      messagingSenderId: "693875057365",
+      appId: "1:693875057365:web:9edf1c7a56595cd9aaf85c",
+    };
 
-    // ============================================================
+    // Detect placeholder config so the UI still works for local preview.
+    const isConfigured = !Object.values(firebaseConfig).some(
+      (v) => typeof v === "string" && v.startsWith("PASTE_")
+    );
+
+    let db = null;
+    let reviewsRef = null;
+    let firebaseReady = false;
+
+    if (isConfigured) {
+      try {
+        const app = initializeApp(firebaseConfig);
+        db = getDatabase(app);
+        reviewsRef = ref(db, "reviews");
+        firebaseReady = true;
+      } catch (err) {
+        console.error("Firebase init failed:", err);
+      }
+    } else {
+      console.warn(
+        "Firebase config not set yet — paste your databaseURL in index.html."
+      );
+    }
+
     // State
-    // ============================================================
     let selectedRating = 0;
     let isSubmitting = false;
 
-    // ============================================================
     // DOM
-    // ============================================================
     const $ = (id) => document.getElementById(id);
 
     const averageNumberEl = $("averageNumber");
@@ -818,9 +756,7 @@ const app = initializeApp(firebaseConfig);
     const successView = $("successView");
     const hpField = $("hp_field");
 
-    // ============================================================
     // Helpers
-    // ============================================================
     const SVG_NS = "http://www.w3.org/2000/svg";
     const STAR_PATH =
       "M12 2.5l2.95 5.98 6.6.96-4.78 4.66 1.13 6.57L12 17.6l-5.9 3.1 1.13-6.57L2.45 9.44l6.6-.96L12 2.5z";
@@ -836,10 +772,6 @@ const app = initializeApp(firebaseConfig);
       return svg;
     }
 
-    /**
-     * Render N stars into container.
-     * Supports fractional values: any star with rating >= i+0.5 gets a partial fill via clip.
-     */
     function renderStarsInto(container, rating, size = 22) {
       container.innerHTML = "";
       for (let i = 0; i < 5; i++) {
@@ -849,21 +781,19 @@ const app = initializeApp(firebaseConfig);
         if (diff >= 0.75) {
           star.classList.add("is-filled");
         } else if (diff >= 0.25) {
-          // half-fill: use a linearGradient via inline SVG override
           const path = star.querySelector("path");
-          const ns = "http://www.w3.org/2000/svg";
           const gradId = `g${Math.random().toString(36).slice(2, 8)}`;
-          const defs = document.createElementNS(ns, "defs");
-          const lg = document.createElementNS(ns, "linearGradient");
+          const defs = document.createElementNS(SVG_NS, "defs");
+          const lg = document.createElementNS(SVG_NS, "linearGradient");
           lg.setAttribute("id", gradId);
           lg.setAttribute("x1", "0");
           lg.setAttribute("x2", "1");
           lg.setAttribute("y1", "0");
           lg.setAttribute("y2", "0");
-          const s1 = document.createElementNS(ns, "stop");
+          const s1 = document.createElementNS(SVG_NS, "stop");
           s1.setAttribute("offset", "50%");
           s1.setAttribute("stop-color", "#FFD60A");
-          const s2 = document.createElementNS(ns, "stop");
+          const s2 = document.createElementNS(SVG_NS, "stop");
           s2.setAttribute("offset", "50%");
           s2.setAttribute("stop-color", "#3a3a3a");
           lg.appendChild(s1);
@@ -909,16 +839,11 @@ const app = initializeApp(firebaseConfig);
       requestAnimationFrame(step);
     }
 
-    // ============================================================
-    // Render reviews list & average
-    // ============================================================
     function renderReviews(allReviews) {
-      // Sort newest first
       const sorted = allReviews
         .slice()
         .sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
 
-      // ---- Average from ALL reviews ----
       const count = sorted.length;
       if (count === 0) {
         averageNumberEl.textContent = "—";
@@ -934,7 +859,6 @@ const app = initializeApp(firebaseConfig);
         reviewCountLabelEl.textContent = count === 1 ? "review" : "reviews";
       }
 
-      // ---- Last 5 ----
       const last5 = sorted.slice(0, 5);
       if (last5.length === 0) {
         reviewsListEl.innerHTML =
@@ -963,7 +887,7 @@ const app = initializeApp(firebaseConfig);
 
         const text = document.createElement("p");
         text.className = "review__text";
-        text.textContent = r.text || ""; // textContent prevents XSS
+        text.textContent = r.text || "";
 
         const name = document.createElement("div");
         const isAnon = !r.name || !r.name.trim();
@@ -978,34 +902,32 @@ const app = initializeApp(firebaseConfig);
       });
     }
 
-    // ============================================================
     // Firebase listener
-    // ============================================================
-    // Listen to the most recent 500 reviews (more than enough headroom).
-    // If this site ever grows huge, refactor to maintain an aggregate
-    // at /meta/{sum,count} and update it transactionally on submit.
-    const recentQuery = query(reviewsRef, orderByChild("timestamp"), limitToLast(500));
+    if (firebaseReady) {
+      const recentQuery = query(reviewsRef, orderByChild("timestamp"), limitToLast(500));
 
-    onValue(
-      recentQuery,
-      (snap) => {
-        const items = [];
-        snap.forEach((child) => {
-          const v = child.val();
-          if (v && typeof v.rating === "number") items.push(v);
-        });
-        renderReviews(items);
-      },
-      (err) => {
-        console.error("Firebase read failed:", err);
-        reviewsListEl.innerHTML =
-          '<div class="reviews__empty">Could not load reviews. Try refreshing.</div>';
-      }
-    );
+      onValue(
+        recentQuery,
+        (snap) => {
+          const items = [];
+          snap.forEach((child) => {
+            const v = child.val();
+            if (v && typeof v.rating === "number") items.push(v);
+          });
+          renderReviews(items);
+        },
+        (err) => {
+          console.error("Firebase read failed:", err);
+          reviewsListEl.innerHTML =
+            '<div class="reviews__empty">Could not load reviews. Try refreshing.</div>';
+        }
+      );
+    } else {
+      reviewsListEl.innerHTML =
+        '<div class="reviews__empty">⚠️ Firebase not configured. Paste your <code>databaseURL</code> in <code>index.html</code> to enable reviews.</div>';
+    }
 
-    // ============================================================
-    // Star picker (modal)
-    // ============================================================
+    // Star picker
     function buildStarPicker() {
       starPicker.innerHTML = "";
       for (let i = 1; i <= 5; i++) {
@@ -1037,13 +959,11 @@ const app = initializeApp(firebaseConfig);
       validateForm();
     }
 
-    // ============================================================
-    // Form validation & submission
-    // ============================================================
+    // Validation & submit
     function validateForm() {
       const hasRating = selectedRating >= 1 && selectedRating <= 5;
       const text = reviewText.value.trim();
-      const hasText = text.length >= 3; // require at least 3 chars
+      const hasText = text.length >= 3;
       submitBtn.disabled = !(hasRating && hasText) || isSubmitting;
     }
 
@@ -1058,9 +978,13 @@ const app = initializeApp(firebaseConfig);
       if (isSubmitting) return;
       formError.classList.remove("is-visible");
 
-      // Honeypot — silently drop if filled
+      if (!firebaseReady) {
+        showError("Firebase not connected yet. Paste your config in index.html.");
+        return;
+      }
+
       if (hpField.value) {
-        showSuccessThenClose(); // pretend success
+        showSuccessThenClose();
         return;
       }
 
@@ -1077,8 +1001,6 @@ const app = initializeApp(firebaseConfig);
         return;
       }
 
-      // Light client-side rate limiting via localStorage (24h cooldown).
-      // Easily bypassed, but stops casual repeat submissions.
       const last = parseInt(localStorage.getItem("lastReviewAt") || "0", 10);
       const COOLDOWN_MS = 24 * 60 * 60 * 1000;
       if (last && Date.now() - last < COOLDOWN_MS) {
@@ -1120,7 +1042,6 @@ const app = initializeApp(firebaseConfig);
       successView.classList.add("is-visible");
       setTimeout(() => {
         closeModal();
-        // Reset for next time
         setTimeout(() => {
           formView.style.display = "";
           successView.classList.remove("is-visible");
@@ -1140,13 +1061,10 @@ const app = initializeApp(firebaseConfig);
       validateForm();
     }
 
-    // ============================================================
-    // Modal open/close
-    // ============================================================
+    // Modal
     function openModal() {
       modal.classList.add("is-open");
       document.body.classList.add("modal-open");
-      // Subtle focus delay so the slide-in plays first
       setTimeout(() => reviewText.focus({ preventScroll: true }), 320);
     }
 
@@ -1162,11 +1080,9 @@ const app = initializeApp(firebaseConfig);
       if (e.key === "Escape" && modal.classList.contains("is-open")) closeModal();
     });
 
-    // ============================================================
     // Init
-    // ============================================================
     buildStarPicker();
-    renderStarsInto(averageStarsEl, 0); // placeholder
+    renderStarsInto(averageStarsEl, 0);
   </script>
 </body>
 </html>
