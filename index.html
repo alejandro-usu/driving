@@ -584,8 +584,8 @@
 
     <section class="fade-up d3" aria-label="Recent reviews">
       <div class="section-head">
-        <h2>Latest Reviews</h2>
-        <span class="count">Last 5</span>
+        <h2>Reviews</h2>
+        <span class="count" id="reviewsListCount"></span>
       </div>
       <div class="reviews" id="reviewsList">
         <div class="reviews__loading">Loading reviews…</div>
@@ -669,9 +669,11 @@
       serverTimestamp,
       query,
       orderByChild,
-      limitToLast,
     } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
     
+    import Filter from "https://esm.sh/bad-words@3.0.4";
+    const profanityFilter = new Filter();
+
     const firebaseConfig = {
       apiKey: "AIzaSyCsdU0umrAcCM06TrqXGdIwpYwVYA8jsfU",
       authDomain: "driving-6e33f.firebaseapp.com",
@@ -836,15 +838,14 @@
         reviewCountLabelEl.textContent = count === 1 ? "review" : "reviews";
       }
 
-      const last5 = sorted.slice(0, 5);
-      if (last5.length === 0) {
+      if (sorted.length === 0) {
         reviewsListEl.innerHTML =
           '<div class="reviews__empty">No reviews yet. Be the first!</div>';
         return;
       }
 
       reviewsListEl.innerHTML = "";
-      last5.forEach((r) => {
+      sorted.forEach((r) => {
         const card = document.createElement("article");
         card.className = "review";
 
@@ -881,7 +882,7 @@
 
     // Firebase listener
     if (firebaseReady) {
-      const recentQuery = query(reviewsRef, orderByChild("timestamp"), limitToLast(500));
+      const recentQuery = query(reviewsRef, orderByChild("timestamp"));
 
       onValue(
         recentQuery,
@@ -976,6 +977,11 @@
       if (text.length < 3) {
         showError("Add a few words to your review.");
         return;
+      }
+
+      if (profanityFilter.isProfane(text) || profanityFilter.isProfane(name)) {
+        showError("Please keep it civil.");
+      return;
       }
 
       const last = parseInt(localStorage.getItem("lastReviewAt") || "0", 10);
