@@ -1,0 +1,1158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#0F0F0F" />
+  <title>How's My Driving? — Alejandro</title>
+  <meta name="description" content="Scan, rate, and review Alejandro's driving." />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=JetBrains+Mono:wght@700&family=Manrope:wght@400;500;600;700;800&display=swap"
+    rel="stylesheet"
+  />
+
+  <style>
+    /* =====================================================
+       Design tokens
+       ===================================================== */
+    :root {
+      --bg: #0f0f0f;
+      --surface: #181818;
+      --surface-2: #1f1f1f;
+      --border: #2a2a2a;
+      --text: #fafafa;
+      --text-dim: #8a8a8a;
+      --text-faint: #5a5a5a;
+      --accent: #ffd60a;        /* road-sign yellow */
+      --accent-dark: #c9a800;
+      --star-empty: #3a3a3a;
+      --danger: #ff5247;
+
+      --radius: 14px;
+      --radius-lg: 20px;
+      --shadow-lg: 0 24px 60px -20px rgba(0, 0, 0, 0.6);
+
+      --font-display: "Bebas Neue", "Impact", sans-serif;
+      --font-body: "Manrope", system-ui, sans-serif;
+      --font-mono: "JetBrains Mono", ui-monospace, monospace;
+    }
+
+    /* =====================================================
+       Reset & base
+       ===================================================== */
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      -webkit-text-size-adjust: 100%;
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: var(--font-body);
+      font-size: 16px;
+      line-height: 1.5;
+      color: var(--text);
+      background: var(--bg);
+      min-height: 100vh;
+      min-height: 100dvh;
+      overflow-x: hidden;
+      padding: 0 20px 120px;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    /* Subtle dashed-road accent at the top of the page */
+    body::before {
+      content: "";
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background-image: linear-gradient(
+        to right,
+        var(--accent) 0 24px,
+        transparent 24px 44px
+      );
+      background-size: 44px 4px;
+      z-index: 50;
+    }
+
+    button {
+      font: inherit;
+      color: inherit;
+      background: none;
+      border: none;
+      cursor: pointer;
+    }
+
+    input,
+    textarea {
+      font: inherit;
+      color: inherit;
+    }
+
+    /* =====================================================
+       Layout
+       ===================================================== */
+    .container {
+      max-width: 560px;
+      margin: 0 auto;
+      padding-top: 48px;
+    }
+
+    /* Staggered entrance */
+    .fade-up {
+      opacity: 0;
+      transform: translateY(16px);
+      animation: fadeUp 0.7s cubic-bezier(0.2, 0.7, 0.2, 1) forwards;
+    }
+    .fade-up.d1 { animation-delay: 0.05s; }
+    .fade-up.d2 { animation-delay: 0.18s; }
+    .fade-up.d3 { animation-delay: 0.32s; }
+    .fade-up.d4 { animation-delay: 0.46s; }
+
+    @keyframes fadeUp {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* =====================================================
+       Hero
+       ===================================================== */
+    .hero {
+      text-align: center;
+      margin-bottom: 32px;
+    }
+
+    .hero__eyebrow {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--accent);
+      padding: 6px 12px;
+      border: 1px solid var(--accent);
+      border-radius: 999px;
+      margin-bottom: 20px;
+    }
+
+    .hero__title {
+      font-family: var(--font-display);
+      font-size: clamp(56px, 14vw, 88px);
+      line-height: 0.92;
+      letter-spacing: 0.005em;
+      color: var(--text);
+    }
+
+    .hero__title .accent {
+      color: var(--accent);
+    }
+
+    .hero__sub {
+      margin-top: 14px;
+      color: var(--text-dim);
+      font-size: 15px;
+      max-width: 380px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    /* =====================================================
+       Summary card
+       ===================================================== */
+    .summary {
+      background: linear-gradient(180deg, var(--surface) 0%, var(--surface-2) 100%);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 32px 24px;
+      text-align: center;
+      margin-bottom: 32px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .summary::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(
+        ellipse at top,
+        rgba(255, 214, 10, 0.07),
+        transparent 60%
+      );
+      pointer-events: none;
+    }
+
+    .summary__big {
+      font-family: var(--font-mono);
+      font-weight: 700;
+      font-size: 76px;
+      line-height: 1;
+      letter-spacing: -0.04em;
+      color: var(--text);
+      display: flex;
+      align-items: baseline;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    .summary__big .denom {
+      color: var(--text-faint);
+      font-size: 28px;
+    }
+
+    .summary__stars {
+      display: flex;
+      justify-content: center;
+      gap: 6px;
+      margin-top: 14px;
+    }
+
+    .summary__count {
+      margin-top: 12px;
+      font-size: 13px;
+      color: var(--text-dim);
+      letter-spacing: 0.02em;
+    }
+
+    .summary__count strong {
+      color: var(--text);
+      font-weight: 700;
+    }
+
+    /* Star SVGs */
+    .star {
+      width: 22px;
+      height: 22px;
+      display: inline-block;
+      flex-shrink: 0;
+    }
+    .star path {
+      fill: var(--star-empty);
+      transition: fill 0.18s ease;
+    }
+    .star.is-filled path {
+      fill: var(--accent);
+    }
+    .star.is-half {
+      position: relative;
+    }
+    .star.is-half .star-half-fill {
+      fill: var(--accent);
+    }
+
+    /* =====================================================
+       Submit button (sticky bottom on mobile)
+       ===================================================== */
+    .submit-bar {
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      padding: 16px 20px calc(16px + env(safe-area-inset-bottom));
+      background: linear-gradient(180deg, transparent 0%, var(--bg) 35%);
+      z-index: 30;
+      pointer-events: none;
+    }
+
+    .submit-btn {
+      pointer-events: auto;
+      display: block;
+      width: 100%;
+      max-width: 560px;
+      margin: 0 auto;
+      background: var(--accent);
+      color: #0a0a0a;
+      font-family: var(--font-body);
+      font-weight: 800;
+      font-size: 16px;
+      letter-spacing: 0.02em;
+      padding: 18px 24px;
+      border-radius: 999px;
+      box-shadow: 0 10px 30px -8px rgba(255, 214, 10, 0.45);
+      transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+    }
+
+    .submit-btn:hover {
+      background: #ffe149;
+    }
+    .submit-btn:active {
+      transform: translateY(1px);
+      box-shadow: 0 6px 18px -8px rgba(255, 214, 10, 0.4);
+    }
+
+    /* =====================================================
+       Reviews list
+       ===================================================== */
+    .section-head {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      margin-bottom: 16px;
+    }
+
+    .section-head h2 {
+      font-family: var(--font-display);
+      font-size: 28px;
+      letter-spacing: 0.02em;
+      font-weight: 400;
+    }
+
+    .section-head .count {
+      font-size: 12px;
+      color: var(--text-faint);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .reviews {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .review {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 18px 18px 16px;
+      transition: border-color 0.2s ease, transform 0.2s ease;
+    }
+
+    .review:hover {
+      border-color: #3a3a3a;
+    }
+
+    .review__top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .review__stars {
+      display: flex;
+      gap: 3px;
+    }
+    .review__stars .star {
+      width: 16px;
+      height: 16px;
+    }
+
+    .review__time {
+      font-size: 12px;
+      color: var(--text-faint);
+      letter-spacing: 0.02em;
+    }
+
+    .review__text {
+      font-size: 15px;
+      line-height: 1.5;
+      color: var(--text);
+      margin-bottom: 12px;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+    }
+
+    .review__name {
+      font-size: 12px;
+      color: var(--text-dim);
+      font-weight: 600;
+      letter-spacing: 0.02em;
+    }
+
+    .review__name.is-anon {
+      color: var(--text-faint);
+      font-style: italic;
+      font-weight: 500;
+    }
+
+    .reviews__empty {
+      text-align: center;
+      padding: 40px 20px;
+      color: var(--text-faint);
+      font-size: 14px;
+      border: 1px dashed var(--border);
+      border-radius: var(--radius);
+    }
+
+    .reviews__loading {
+      text-align: center;
+      padding: 24px;
+      color: var(--text-faint);
+      font-size: 13px;
+    }
+
+    /* =====================================================
+       Modal
+       ===================================================== */
+    .modal {
+      position: fixed;
+      inset: 0;
+      z-index: 100;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      pointer-events: none;
+    }
+
+    .modal__backdrop {
+      position: absolute;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+      opacity: 0;
+      transition: opacity 0.25s ease;
+    }
+
+    .modal__sheet {
+      position: relative;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-bottom: none;
+      border-radius: 24px 24px 0 0;
+      width: 100%;
+      max-width: 560px;
+      padding: 24px 22px calc(28px + env(safe-area-inset-bottom));
+      box-shadow: var(--shadow-lg);
+      transform: translateY(100%);
+      transition: transform 0.32s cubic-bezier(0.2, 0.7, 0.2, 1);
+    }
+
+    .modal.is-open {
+      pointer-events: auto;
+    }
+    .modal.is-open .modal__backdrop {
+      opacity: 1;
+    }
+    .modal.is-open .modal__sheet {
+      transform: translateY(0);
+    }
+
+    .modal__grabber {
+      width: 40px;
+      height: 4px;
+      background: var(--border);
+      border-radius: 999px;
+      margin: 0 auto 18px;
+    }
+
+    .modal__title {
+      font-family: var(--font-display);
+      font-size: 36px;
+      letter-spacing: 0.02em;
+      text-align: center;
+      margin-bottom: 6px;
+    }
+
+    .modal__subtitle {
+      text-align: center;
+      color: var(--text-dim);
+      font-size: 13px;
+      margin-bottom: 24px;
+    }
+
+    .star-picker {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      margin-bottom: 24px;
+    }
+
+    .star-picker button {
+      padding: 6px;
+      border-radius: 8px;
+      transition: transform 0.12s ease, background 0.15s ease;
+    }
+    .star-picker button:hover {
+      transform: scale(1.1);
+      background: rgba(255, 214, 10, 0.08);
+    }
+    .star-picker button:active {
+      transform: scale(0.95);
+    }
+    .star-picker .star {
+      width: 36px;
+      height: 36px;
+    }
+
+    .field {
+      margin-bottom: 14px;
+    }
+
+    .field label {
+      display: block;
+      font-size: 11px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      margin-bottom: 6px;
+      font-weight: 700;
+    }
+
+    .field textarea,
+    .field input {
+      width: 100%;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 12px 14px;
+      font-size: 15px;
+      color: var(--text);
+      transition: border-color 0.18s ease;
+      font-family: var(--font-body);
+    }
+
+    .field textarea {
+      min-height: 100px;
+      resize: vertical;
+    }
+
+    .field textarea:focus,
+    .field input:focus {
+      outline: none;
+      border-color: var(--accent);
+    }
+
+    .field__counter {
+      display: block;
+      text-align: right;
+      font-size: 11px;
+      color: var(--text-faint);
+      margin-top: 4px;
+      font-family: var(--font-mono);
+    }
+
+    .modal__actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 20px;
+    }
+
+    .btn {
+      flex: 1;
+      padding: 14px 18px;
+      border-radius: 999px;
+      font-weight: 700;
+      font-size: 15px;
+      letter-spacing: 0.02em;
+      transition: transform 0.12s ease, background 0.15s ease, opacity 0.15s;
+    }
+    .btn-primary {
+      background: var(--accent);
+      color: #0a0a0a;
+    }
+    .btn-primary:hover { background: #ffe149; }
+    .btn-primary:disabled {
+      background: var(--surface-2);
+      color: var(--text-faint);
+      cursor: not-allowed;
+    }
+    .btn-secondary {
+      background: transparent;
+      color: var(--text-dim);
+      border: 1px solid var(--border);
+    }
+    .btn-secondary:hover {
+      border-color: var(--text-dim);
+      color: var(--text);
+    }
+
+    .form-error {
+      display: none;
+      color: var(--danger);
+      font-size: 13px;
+      margin-top: 12px;
+      text-align: center;
+    }
+    .form-error.is-visible {
+      display: block;
+    }
+
+    /* Success state replaces the form briefly */
+    .modal__success {
+      display: none;
+      text-align: center;
+      padding: 12px 0 4px;
+    }
+    .modal__success.is-visible {
+      display: block;
+    }
+    .modal__success svg {
+      width: 56px;
+      height: 56px;
+      margin-bottom: 14px;
+    }
+    .modal__success h3 {
+      font-family: var(--font-display);
+      font-size: 32px;
+      letter-spacing: 0.02em;
+      margin-bottom: 6px;
+    }
+    .modal__success p {
+      color: var(--text-dim);
+      font-size: 14px;
+    }
+
+    /* Lock body scroll when modal open */
+    body.modal-open {
+      overflow: hidden;
+    }
+
+    /* Desktop tweaks */
+    @media (min-width: 640px) {
+      .modal {
+        align-items: center;
+      }
+      .modal__sheet {
+        border-radius: 24px;
+        border-bottom: 1px solid var(--border);
+        transform: translateY(40px);
+        max-width: 480px;
+      }
+      .modal.is-open .modal__sheet {
+        transform: translateY(0);
+      }
+      .modal__grabber { display: none; }
+    }
+
+    /* Footer */
+    .footer {
+      text-align: center;
+      margin-top: 40px;
+      font-size: 11px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--text-faint);
+    }
+  </style>
+</head>
+<body>
+  <main class="container">
+    <header class="hero fade-up d1">
+      <span class="hero__eyebrow">Anonymous · 30 seconds</span>
+      <h1 class="hero__title">
+        How's my<br /><span class="accent">driving?</span>
+      </h1>
+      <p class="hero__sub">
+        You scanned my bumper. Now tell me the truth. Honest, anonymous, all stars welcome — even one.
+      </p>
+    </header>
+
+    <section class="summary fade-up d2" aria-label="Overall rating">
+      <div class="summary__big">
+        <span id="averageNumber">—</span><span class="denom">/ 5</span>
+      </div>
+      <div class="summary__stars" id="averageStars" aria-hidden="true"></div>
+      <div class="summary__count">
+        Based on <strong id="reviewCount">0</strong> <span id="reviewCountLabel">reviews</span>
+      </div>
+    </section>
+
+    <section class="fade-up d3" aria-label="Recent reviews">
+      <div class="section-head">
+        <h2>Latest Reviews</h2>
+        <span class="count">Last 5</span>
+      </div>
+      <div class="reviews" id="reviewsList">
+        <div class="reviews__loading">Loading reviews…</div>
+      </div>
+    </section>
+
+    <footer class="footer fade-up d4">alejandrodriving.org</footer>
+  </main>
+
+  <div class="submit-bar fade-up d4">
+    <button class="submit-btn" id="openModalBtn" aria-haspopup="dialog">
+      Leave a review
+    </button>
+  </div>
+
+  <!-- Modal -->
+  <div class="modal" id="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div class="modal__backdrop" id="modalBackdrop"></div>
+    <div class="modal__sheet">
+      <div class="modal__grabber"></div>
+
+      <div id="formView">
+        <h2 class="modal__title" id="modalTitle">Rate the drive</h2>
+        <p class="modal__subtitle">Tap a star, then say a few words.</p>
+
+        <div class="star-picker" id="starPicker" role="radiogroup" aria-label="Star rating"></div>
+
+        <div class="field">
+          <label for="reviewText">Your review</label>
+          <textarea
+            id="reviewText"
+            maxlength="280"
+            placeholder="Was it smooth? Aggressive? Did I cut you off?"
+          ></textarea>
+          <span class="field__counter"><span id="textCount">0</span>/280</span>
+        </div>
+
+        <div class="field">
+          <label for="reviewName">Your name (optional)</label>
+          <input
+            id="reviewName"
+            type="text"
+            maxlength="30"
+            placeholder="Leave blank to stay anonymous"
+            autocomplete="off"
+          />
+        </div>
+
+        <!-- Honeypot field for bots (hidden from humans) -->
+        <input
+          type="text"
+          id="hp_field"
+          tabindex="-1"
+          autocomplete="off"
+          style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0;"
+          aria-hidden="true"
+        />
+
+        <div class="modal__actions">
+          <button class="btn btn-secondary" id="cancelBtn">Cancel</button>
+          <button class="btn btn-primary" id="submitBtn" disabled>Submit</button>
+        </div>
+
+        <p class="form-error" id="formError"></p>
+      </div>
+
+      <div class="modal__success" id="successView">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#FFD60A" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10" />
+          <path d="M8 12.5l2.5 2.5L16 9.5" />
+        </svg>
+        <h3>Thanks!</h3>
+        <p>Your review is in. Drive safe.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Star template -->
+  <template id="starTemplate">
+    <svg class="star" viewBox="0 0 24 24" aria-hidden="true">
+      <path d="M12 2.5l2.95 5.98 6.6.96-4.78 4.66 1.13 6.57L12 17.6l-5.9 3.1 1.13-6.57L2.45 9.44l6.6-.96L12 2.5z"/>
+    </svg>
+  </template>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import {
+      getDatabase,
+      ref,
+      push,
+      onValue,
+      serverTimestamp,
+      query,
+      orderByChild,
+      limitToLast,
+    } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+
+    // ============================================================
+    // 🔧 PASTE YOUR FIREBASE CONFIG HERE — copy directly from the
+    //    Firebase Console (Project Settings → Your apps → SDK config).
+    //    Manual typing causes mismatched keys; copy-paste only.
+    // ============================================================
+    const firebaseConfig = {
+      apiKey: "PASTE_FROM_CONSOLE",
+      authDomain: "PASTE_FROM_CONSOLE",
+      databaseURL: "PASTE_FROM_CONSOLE",
+      projectId: "PASTE_FROM_CONSOLE",
+      storageBucket: "PASTE_FROM_CONSOLE",
+      messagingSenderId: "PASTE_FROM_CONSOLE",
+      appId: "PASTE_FROM_CONSOLE",
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+    const reviewsRef = ref(db, "reviews");
+
+    // ============================================================
+    // State
+    // ============================================================
+    let selectedRating = 0;
+    let isSubmitting = false;
+
+    // ============================================================
+    // DOM
+    // ============================================================
+    const $ = (id) => document.getElementById(id);
+    const starTpl = $("starTemplate");
+
+    const averageNumberEl = $("averageNumber");
+    const averageStarsEl = $("averageStars");
+    const reviewCountEl = $("reviewCount");
+    const reviewCountLabelEl = $("reviewCountLabel");
+    const reviewsListEl = $("reviewsList");
+
+    const modal = $("modal");
+    const openModalBtn = $("openModalBtn");
+    const cancelBtn = $("cancelBtn");
+    const submitBtn = $("submitBtn");
+    const modalBackdrop = $("modalBackdrop");
+    const starPicker = $("starPicker");
+    const reviewText = $("reviewText");
+    const reviewName = $("reviewName");
+    const textCount = $("textCount");
+    const formError = $("formError");
+    const formView = $("formView");
+    const successView = $("successView");
+    const hpField = $("hp_field");
+
+    // ============================================================
+    // Helpers
+    // ============================================================
+    function makeStar() {
+      return starTpl.content.firstElementChild.cloneNode(true);
+    }
+
+    /**
+     * Render N stars into container.
+     * Supports fractional values: any star with rating >= i+0.5 gets a partial fill via clip.
+     */
+    function renderStarsInto(container, rating, size = 22) {
+      container.innerHTML = "";
+      for (let i = 0; i < 5; i++) {
+        const star = makeStar();
+        star.style.width = star.style.height = size + "px";
+        const diff = rating - i;
+        if (diff >= 0.75) {
+          star.classList.add("is-filled");
+        } else if (diff >= 0.25) {
+          // half-fill: use a linearGradient via inline SVG override
+          const path = star.querySelector("path");
+          const ns = "http://www.w3.org/2000/svg";
+          const gradId = `g${Math.random().toString(36).slice(2, 8)}`;
+          const defs = document.createElementNS(ns, "defs");
+          const lg = document.createElementNS(ns, "linearGradient");
+          lg.setAttribute("id", gradId);
+          lg.setAttribute("x1", "0");
+          lg.setAttribute("x2", "1");
+          lg.setAttribute("y1", "0");
+          lg.setAttribute("y2", "0");
+          const s1 = document.createElementNS(ns, "stop");
+          s1.setAttribute("offset", "50%");
+          s1.setAttribute("stop-color", "#FFD60A");
+          const s2 = document.createElementNS(ns, "stop");
+          s2.setAttribute("offset", "50%");
+          s2.setAttribute("stop-color", "#3a3a3a");
+          lg.appendChild(s1);
+          lg.appendChild(s2);
+          defs.appendChild(lg);
+          star.appendChild(defs);
+          path.setAttribute("fill", `url(#${gradId})`);
+        }
+        container.appendChild(star);
+      }
+    }
+
+    function relativeTime(ts) {
+      if (!ts) return "";
+      const diff = Date.now() - ts;
+      const s = Math.floor(diff / 1000);
+      if (s < 60) return "just now";
+      const m = Math.floor(s / 60);
+      if (m < 60) return `${m}m ago`;
+      const h = Math.floor(m / 60);
+      if (h < 24) return `${h}h ago`;
+      const d = Math.floor(h / 24);
+      if (d < 7) return `${d}d ago`;
+      const w = Math.floor(d / 7);
+      if (w < 4) return `${w}w ago`;
+      const mo = Math.floor(d / 30);
+      if (mo < 12) return `${mo}mo ago`;
+      const y = Math.floor(d / 365);
+      return `${y}y ago`;
+    }
+
+    function animateCount(el, target, duration = 800) {
+      const start = parseFloat(el.textContent) || 0;
+      const startTime = performance.now();
+      function step(now) {
+        const p = Math.min(1, (now - startTime) / duration);
+        const eased = 1 - Math.pow(1 - p, 3);
+        const v = start + (target - start) * eased;
+        el.textContent = v.toFixed(1);
+        if (p < 1) requestAnimationFrame(step);
+        else el.textContent = target.toFixed(1);
+      }
+      requestAnimationFrame(step);
+    }
+
+    // ============================================================
+    // Render reviews list & average
+    // ============================================================
+    function renderReviews(allReviews) {
+      // Sort newest first
+      const sorted = allReviews
+        .slice()
+        .sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+
+      // ---- Average from ALL reviews ----
+      const count = sorted.length;
+      if (count === 0) {
+        averageNumberEl.textContent = "—";
+        renderStarsInto(averageStarsEl, 0);
+        reviewCountEl.textContent = "0";
+        reviewCountLabelEl.textContent = "reviews";
+      } else {
+        const sum = sorted.reduce((acc, r) => acc + (r.rating || 0), 0);
+        const avg = sum / count;
+        animateCount(averageNumberEl, avg);
+        renderStarsInto(averageStarsEl, avg);
+        reviewCountEl.textContent = String(count);
+        reviewCountLabelEl.textContent = count === 1 ? "review" : "reviews";
+      }
+
+      // ---- Last 5 ----
+      const last5 = sorted.slice(0, 5);
+      if (last5.length === 0) {
+        reviewsListEl.innerHTML =
+          '<div class="reviews__empty">No reviews yet. Be the first!</div>';
+        return;
+      }
+
+      reviewsListEl.innerHTML = "";
+      last5.forEach((r) => {
+        const card = document.createElement("article");
+        card.className = "review";
+
+        const top = document.createElement("div");
+        top.className = "review__top";
+
+        const stars = document.createElement("div");
+        stars.className = "review__stars";
+        renderStarsInto(stars, r.rating || 0, 16);
+
+        const time = document.createElement("span");
+        time.className = "review__time";
+        time.textContent = relativeTime(r.timestamp);
+
+        top.appendChild(stars);
+        top.appendChild(time);
+
+        const text = document.createElement("p");
+        text.className = "review__text";
+        text.textContent = r.text || ""; // textContent prevents XSS
+
+        const name = document.createElement("div");
+        const isAnon = !r.name || !r.name.trim();
+        name.className = "review__name" + (isAnon ? " is-anon" : "");
+        name.textContent = isAnon ? "— Anonymous" : `— ${r.name.trim()}`;
+
+        card.appendChild(top);
+        if (r.text) card.appendChild(text);
+        card.appendChild(name);
+
+        reviewsListEl.appendChild(card);
+      });
+    }
+
+    // ============================================================
+    // Firebase listener
+    // ============================================================
+    // Listen to the most recent 500 reviews (more than enough headroom).
+    // If this site ever grows huge, refactor to maintain an aggregate
+    // at /meta/{sum,count} and update it transactionally on submit.
+    const recentQuery = query(reviewsRef, orderByChild("timestamp"), limitToLast(500));
+
+    onValue(
+      recentQuery,
+      (snap) => {
+        const items = [];
+        snap.forEach((child) => {
+          const v = child.val();
+          if (v && typeof v.rating === "number") items.push(v);
+        });
+        renderReviews(items);
+      },
+      (err) => {
+        console.error("Firebase read failed:", err);
+        reviewsListEl.innerHTML =
+          '<div class="reviews__empty">Could not load reviews. Try refreshing.</div>';
+      }
+    );
+
+    // ============================================================
+    // Star picker (modal)
+    // ============================================================
+    function buildStarPicker() {
+      starPicker.innerHTML = "";
+      for (let i = 1; i <= 5; i++) {
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.setAttribute("role", "radio");
+        btn.setAttribute("aria-label", `${i} star${i > 1 ? "s" : ""}`);
+        btn.dataset.value = String(i);
+        btn.appendChild(makeStar());
+        btn.addEventListener("click", () => setRating(i));
+        btn.addEventListener("mouseenter", () => previewRating(i));
+        btn.addEventListener("mouseleave", () => previewRating(selectedRating));
+        starPicker.appendChild(btn);
+      }
+    }
+
+    function previewRating(n) {
+      const btns = starPicker.querySelectorAll("button");
+      btns.forEach((b, idx) => {
+        const star = b.querySelector(".star");
+        if (idx < n) star.classList.add("is-filled");
+        else star.classList.remove("is-filled");
+      });
+    }
+
+    function setRating(n) {
+      selectedRating = n;
+      previewRating(n);
+      validateForm();
+    }
+
+    // ============================================================
+    // Form validation & submission
+    // ============================================================
+    function validateForm() {
+      const hasRating = selectedRating >= 1 && selectedRating <= 5;
+      const text = reviewText.value.trim();
+      const hasText = text.length >= 3; // require at least 3 chars
+      submitBtn.disabled = !(hasRating && hasText) || isSubmitting;
+    }
+
+    reviewText.addEventListener("input", () => {
+      textCount.textContent = String(reviewText.value.length);
+      validateForm();
+    });
+
+    submitBtn.addEventListener("click", submitReview);
+
+    async function submitReview() {
+      if (isSubmitting) return;
+      formError.classList.remove("is-visible");
+
+      // Honeypot — silently drop if filled
+      if (hpField.value) {
+        showSuccessThenClose(); // pretend success
+        return;
+      }
+
+      const rating = selectedRating;
+      const text = reviewText.value.trim().slice(0, 280);
+      const name = reviewName.value.trim().slice(0, 30);
+
+      if (rating < 1 || rating > 5) {
+        showError("Please pick a star rating.");
+        return;
+      }
+      if (text.length < 3) {
+        showError("Add a few words to your review.");
+        return;
+      }
+
+      // Light client-side rate limiting via localStorage (24h cooldown).
+      // Easily bypassed, but stops casual repeat submissions.
+      const last = parseInt(localStorage.getItem("lastReviewAt") || "0", 10);
+      const COOLDOWN_MS = 24 * 60 * 60 * 1000;
+      if (last && Date.now() - last < COOLDOWN_MS) {
+        const hoursLeft = Math.ceil((COOLDOWN_MS - (Date.now() - last)) / 3600000);
+        showError(`You already left a review. Try again in ~${hoursLeft}h.`);
+        return;
+      }
+
+      isSubmitting = true;
+      submitBtn.disabled = true;
+      submitBtn.textContent = "Submitting…";
+
+      try {
+        await push(reviewsRef, {
+          rating,
+          text,
+          name,
+          timestamp: serverTimestamp(),
+        });
+        localStorage.setItem("lastReviewAt", String(Date.now()));
+        showSuccessThenClose();
+      } catch (err) {
+        console.error("Submit failed:", err);
+        showError("Couldn't submit. Check your connection and try again.");
+      } finally {
+        isSubmitting = false;
+        submitBtn.textContent = "Submit";
+        validateForm();
+      }
+    }
+
+    function showError(msg) {
+      formError.textContent = msg;
+      formError.classList.add("is-visible");
+    }
+
+    function showSuccessThenClose() {
+      formView.style.display = "none";
+      successView.classList.add("is-visible");
+      setTimeout(() => {
+        closeModal();
+        // Reset for next time
+        setTimeout(() => {
+          formView.style.display = "";
+          successView.classList.remove("is-visible");
+          resetForm();
+        }, 350);
+      }, 1600);
+    }
+
+    function resetForm() {
+      selectedRating = 0;
+      reviewText.value = "";
+      reviewName.value = "";
+      hpField.value = "";
+      textCount.textContent = "0";
+      previewRating(0);
+      formError.classList.remove("is-visible");
+      validateForm();
+    }
+
+    // ============================================================
+    // Modal open/close
+    // ============================================================
+    function openModal() {
+      modal.classList.add("is-open");
+      document.body.classList.add("modal-open");
+      // Subtle focus delay so the slide-in plays first
+      setTimeout(() => reviewText.focus({ preventScroll: true }), 320);
+    }
+
+    function closeModal() {
+      modal.classList.remove("is-open");
+      document.body.classList.remove("modal-open");
+    }
+
+    openModalBtn.addEventListener("click", openModal);
+    cancelBtn.addEventListener("click", closeModal);
+    modalBackdrop.addEventListener("click", closeModal);
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape" && modal.classList.contains("is-open")) closeModal();
+    });
+
+    // ============================================================
+    // Init
+    // ============================================================
+    buildStarPicker();
+    renderStarsInto(averageStarsEl, 0); // placeholder
+  </script>
+</body>
+</html>
