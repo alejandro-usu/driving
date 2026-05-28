@@ -407,6 +407,14 @@
       align-items: flex-end;
       justify-content: center;
       pointer-events: none;
+      visibility: hidden;
+      transition: visibility 0s linear 0.32s;
+    }
+
+    .modal.is-open {
+      pointer-events: auto;
+      visibility: visible;
+      transition: visibility 0s linear 0s;
     }
 
     .modal__backdrop {
@@ -433,9 +441,6 @@
       transition: transform 0.32s cubic-bezier(0.2, 0.7, 0.2, 1);
     }
 
-    .modal.is-open {
-      pointer-events: auto;
-    }
     .modal.is-open .modal__backdrop {
       opacity: 1;
     }
@@ -621,11 +626,15 @@
       .modal__sheet {
         border-radius: 24px;
         border-bottom: 1px solid var(--border);
-        transform: translateY(40px);
+        transform: translateY(24px) scale(0.96);
+        opacity: 0;
+        transition: transform 0.32s cubic-bezier(0.2, 0.7, 0.2, 1),
+          opacity 0.25s ease;
         max-width: 480px;
       }
       .modal.is-open .modal__sheet {
-        transform: translateY(0);
+        transform: translateY(0) scale(1);
+        opacity: 1;
       }
       .modal__grabber { display: none; }
     }
@@ -744,13 +753,6 @@
     </div>
   </div>
 
-  <!-- Star template -->
-  <template id="starTemplate">
-    <svg class="star" viewBox="0 0 24 24" aria-hidden="true">
-      <path d="M12 2.5l2.95 5.98 6.6.96-4.78 4.66 1.13 6.57L12 17.6l-5.9 3.1 1.13-6.57L2.45 9.44l6.6-.96L12 2.5z"/>
-    </svg>
-  </template>
-
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
     import {
@@ -763,7 +765,6 @@
       orderByChild,
       limitToLast,
     } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
-
 
     // Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
@@ -782,7 +783,7 @@ const firebaseConfig = {
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
-
+    
     const db = getDatabase(app);
     const reviewsRef = ref(db, "reviews");
 
@@ -796,7 +797,6 @@ const app = initializeApp(firebaseConfig);
     // DOM
     // ============================================================
     const $ = (id) => document.getElementById(id);
-    const starTpl = $("starTemplate");
 
     const averageNumberEl = $("averageNumber");
     const averageStarsEl = $("averageStars");
@@ -821,8 +821,19 @@ const app = initializeApp(firebaseConfig);
     // ============================================================
     // Helpers
     // ============================================================
+    const SVG_NS = "http://www.w3.org/2000/svg";
+    const STAR_PATH =
+      "M12 2.5l2.95 5.98 6.6.96-4.78 4.66 1.13 6.57L12 17.6l-5.9 3.1 1.13-6.57L2.45 9.44l6.6-.96L12 2.5z";
+
     function makeStar() {
-      return starTpl.content.firstElementChild.cloneNode(true);
+      const svg = document.createElementNS(SVG_NS, "svg");
+      svg.setAttribute("class", "star");
+      svg.setAttribute("viewBox", "0 0 24 24");
+      svg.setAttribute("aria-hidden", "true");
+      const path = document.createElementNS(SVG_NS, "path");
+      path.setAttribute("d", STAR_PATH);
+      svg.appendChild(path);
+      return svg;
     }
 
     /**
