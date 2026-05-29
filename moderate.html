@@ -1,0 +1,756 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#0F0F0F" />
+  <meta name="robots" content="noindex,nofollow" />
+  <title>Moderate · How's My Driving</title>
+
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🔒</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Manrope:wght@400;500;600;700;800&display=swap"
+    rel="stylesheet"
+  />
+
+  <style>
+    :root {
+      --bg: #0f0f0f;
+      --surface: #181818;
+      --surface-2: #1f1f1f;
+      --border: #2a2a2a;
+      --text: #fafafa;
+      --text-dim: #8a8a8a;
+      --text-faint: #5a5a5a;
+      --accent: #ffd60a;
+      --star-empty: #3a3a3a;
+      --danger: #ff5247;
+      --danger-bg: rgba(255, 82, 71, 0.08);
+      --success: #4ade80;
+
+      --radius: 14px;
+      --radius-lg: 20px;
+      --shadow-lg: 0 24px 60px -20px rgba(0, 0, 0, 0.6);
+
+      --font-display: "Bebas Neue", "Impact", sans-serif;
+      --font-body: "Manrope", system-ui, sans-serif;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { -webkit-text-size-adjust: 100%; }
+
+    body {
+      font-family: var(--font-body);
+      font-size: 16px;
+      line-height: 1.5;
+      color: var(--text);
+      background: var(--bg);
+      min-height: 100vh;
+      min-height: 100dvh;
+      padding: 0 20px 80px;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      height: 4px;
+      background-image: linear-gradient(to right, var(--accent) 0 24px, transparent 24px 44px);
+      background-size: 44px 4px;
+      z-index: 50;
+    }
+
+    button { font: inherit; color: inherit; background: none; border: none; cursor: pointer; }
+
+    .container { max-width: 720px; margin: 0 auto; padding-top: 48px; }
+
+    /* ============ Header ============ */
+    .hero { text-align: center; margin-bottom: 36px; }
+    .hero__eyebrow {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--accent);
+      padding: 6px 12px;
+      border: 1px solid var(--accent);
+      border-radius: 999px;
+      margin-bottom: 18px;
+    }
+    .hero__title {
+      font-family: var(--font-display);
+      font-size: clamp(48px, 10vw, 72px);
+      line-height: 0.95;
+      letter-spacing: 0.005em;
+    }
+
+    /* ============ State views ============ */
+    .state-view {
+      text-align: center;
+      padding: 40px 20px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+    }
+    .state-view p { color: var(--text-dim); font-size: 15px; margin-bottom: 20px; }
+    .state-view p.muted { color: var(--text-faint); font-size: 13px; margin-bottom: 4px; }
+    .state-view strong { color: var(--text); }
+
+    .btn-google {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      background: #fff;
+      color: #1f1f1f;
+      font-weight: 600;
+      font-size: 15px;
+      padding: 12px 20px;
+      border-radius: 999px;
+      transition: transform 0.12s ease, box-shadow 0.15s ease;
+      box-shadow: 0 8px 24px -10px rgba(255, 255, 255, 0.2);
+    }
+    .btn-google:hover { transform: translateY(-1px); box-shadow: 0 10px 28px -8px rgba(255, 255, 255, 0.3); }
+    .btn-google:active { transform: translateY(0); }
+    .btn-google svg { width: 18px; height: 18px; flex-shrink: 0; }
+
+    /* ============ Admin bar ============ */
+    .admin-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 10px 14px;
+      margin-bottom: 28px;
+      font-size: 13px;
+    }
+    .admin-bar__email {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--text-dim);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .admin-bar__dot {
+      width: 8px;
+      height: 8px;
+      background: var(--success);
+      border-radius: 50%;
+      flex-shrink: 0;
+      box-shadow: 0 0 8px var(--success);
+    }
+    .admin-bar__email strong { color: var(--text); font-weight: 600; }
+    .admin-bar__signout {
+      font-size: 12px;
+      color: var(--text-faint);
+      letter-spacing: 0.04em;
+      padding: 6px 10px;
+      border-radius: 8px;
+      transition: color 0.15s ease, background 0.15s ease;
+    }
+    .admin-bar__signout:hover { color: var(--text); background: var(--surface-2); }
+
+    /* ============ Sections ============ */
+    .mod-section { margin-bottom: 36px; }
+
+    .section-head {
+      display: flex;
+      align-items: baseline;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+    .section-head h2 {
+      font-family: var(--font-display);
+      font-size: 28px;
+      letter-spacing: 0.02em;
+      font-weight: 400;
+    }
+    .section-head .count {
+      font-size: 12px;
+      color: var(--text-faint);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      font-family: var(--font-body);
+      font-weight: 700;
+    }
+    .section-head .count.has-pending { color: var(--accent); }
+
+    .review-list { display: flex; flex-direction: column; gap: 12px; }
+
+    /* ============ Review cards ============ */
+    .review {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px 16px 14px;
+    }
+    .review--pending {
+      border-color: rgba(255, 214, 10, 0.3);
+      background: linear-gradient(180deg, rgba(255, 214, 10, 0.04), var(--surface) 60%);
+    }
+    .review--pinned {
+      border-color: var(--accent);
+    }
+
+    .review__top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 10px;
+      gap: 12px;
+    }
+    .review__stars { display: flex; gap: 3px; }
+    .review__time { font-size: 12px; color: var(--text-faint); }
+
+    .review__text {
+      font-size: 15px;
+      line-height: 1.5;
+      margin-bottom: 10px;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+    }
+
+    .review__name {
+      font-size: 12px;
+      color: var(--text-dim);
+      font-weight: 600;
+      margin-bottom: 14px;
+    }
+    .review__name.is-anon { color: var(--text-faint); font-style: italic; font-weight: 500; }
+
+    .review__actions {
+      display: flex;
+      gap: 8px;
+      justify-content: flex-end;
+      align-items: center;
+    }
+
+    .action-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      padding: 8px 14px;
+      border-radius: 999px;
+      border: 1px solid transparent;
+      transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease, transform 0.1s ease;
+    }
+    .action-btn:active { transform: scale(0.97); }
+
+    .action-btn--approve {
+      background: var(--accent);
+      color: #0a0a0a;
+    }
+    .action-btn--approve:hover { background: #ffe149; }
+
+    .action-btn--reject,
+    .action-btn--delete {
+      color: var(--danger);
+      border-color: rgba(255, 82, 71, 0.3);
+    }
+    .action-btn--reject:hover,
+    .action-btn--delete:hover {
+      background: var(--danger-bg);
+      border-color: var(--danger);
+    }
+
+    .action-btn--pin {
+      color: var(--text-dim);
+      border-color: var(--border);
+    }
+    .action-btn--pin:hover {
+      color: var(--accent);
+      border-color: var(--accent);
+    }
+    .action-btn--pin.is-pinned {
+      color: var(--accent);
+      border-color: var(--accent);
+      background: rgba(255, 214, 10, 0.06);
+    }
+
+    .action-btn[disabled] { opacity: 0.5; cursor: not-allowed; }
+
+    /* Star SVGs */
+    .star { width: 16px; height: 16px; display: inline-block; flex-shrink: 0; }
+    .star path { fill: var(--star-empty); }
+    .star.is-filled path { fill: var(--accent); }
+
+    /* Empty/loading states */
+    .empty-state {
+      text-align: center;
+      padding: 32px 16px;
+      color: var(--text-faint);
+      font-size: 14px;
+      border: 1px dashed var(--border);
+      border-radius: var(--radius);
+    }
+    .empty-state.is-good { color: var(--success); }
+
+    /* Toast for action feedback */
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%) translateY(120%);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 10px 18px;
+      font-size: 13px;
+      color: var(--text);
+      box-shadow: var(--shadow-lg);
+      transition: transform 0.3s cubic-bezier(0.2, 0.7, 0.2, 1);
+      z-index: 200;
+      pointer-events: none;
+    }
+    .toast.is-visible { transform: translateX(-50%) translateY(0); }
+    .toast.is-error { border-color: var(--danger); color: var(--danger); }
+
+    [hidden] { display: none !important; }
+
+    @media (max-width: 480px) {
+      .review__actions { flex-wrap: wrap; }
+      .action-btn { flex: 1; justify-content: center; min-width: 0; }
+    }
+  </style>
+</head>
+<body>
+  <main class="container">
+    <header class="hero">
+      <span class="hero__eyebrow">Admin</span>
+      <h1 class="hero__title">Moderate</h1>
+    </header>
+
+    <div id="loadingView" class="state-view">
+      <p>Loading…</p>
+    </div>
+
+    <div id="signedOutView" class="state-view" hidden>
+      <p>Sign in to manage reviews.</p>
+      <button id="signInBtn" class="btn-google">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+          <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+          <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
+          <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+        </svg>
+        Sign in with Google
+      </button>
+    </div>
+
+    <div id="unauthorizedView" class="state-view" hidden>
+      <p>Access denied.</p>
+      <p class="muted">Signed in as <strong id="signedInAs"></strong></p>
+      <button id="signOutBtn1" class="action-btn action-btn--reject" style="margin-top: 16px;">Sign out</button>
+    </div>
+
+    <div id="adminView" hidden>
+      <div class="admin-bar">
+        <span class="admin-bar__email">
+          <span class="admin-bar__dot"></span>
+          <strong id="adminEmail"></strong>
+        </span>
+        <button id="signOutBtn2" class="admin-bar__signout">Sign out</button>
+      </div>
+
+      <section class="mod-section">
+        <div class="section-head">
+          <h2>Pending</h2>
+          <span class="count" id="pendingCount">0</span>
+        </div>
+        <div class="review-list" id="pendingList">
+          <div class="empty-state">Loading…</div>
+        </div>
+      </section>
+
+      <section class="mod-section">
+        <div class="section-head">
+          <h2>Approved</h2>
+          <span class="count" id="approvedCount">0</span>
+        </div>
+        <div class="review-list" id="approvedList">
+          <div class="empty-state">Loading…</div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <div id="toast" class="toast"></div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import {
+      getDatabase, ref, push, remove, update, onValue, query, orderByChild,
+    } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+    import {
+      getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged,
+    } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+
+    // ============================================================
+    // CONFIG — replace ADMIN_EMAIL with your Google account email.
+    // Must match the email you put in database.rules.json.
+    // ============================================================
+    const firebaseConfig = {
+      apiKey: "AIzaSyCsdU0umrAcCM06TrqXGdIwpYwVYA8jsfU",
+      authDomain: "driving-6e33f.firebaseapp.com",
+      databaseURL: "https://driving-6e33f-default-rtdb.firebaseio.com",
+      projectId: "driving-6e33f",
+      storageBucket: "driving-6e33f.firebasestorage.app",
+      messagingSenderId: "693875057365",
+      appId: "1:693875057365:web:9edf1c7a56595cd9aaf85c",
+    };
+
+    const ADMIN_EMAIL = "PASTE_YOUR_GOOGLE_EMAIL_HERE";
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+    const auth = getAuth(app);
+    const provider = new GoogleAuthProvider();
+
+    const pendingRef = ref(db, "reviews/pending");
+    const approvedRef = ref(db, "reviews/approved");
+
+    // ============================================================
+    // DOM
+    // ============================================================
+    const $ = (id) => document.getElementById(id);
+    const loadingView = $("loadingView");
+    const signedOutView = $("signedOutView");
+    const unauthorizedView = $("unauthorizedView");
+    const adminView = $("adminView");
+    const signInBtn = $("signInBtn");
+    const signOutBtn1 = $("signOutBtn1");
+    const signOutBtn2 = $("signOutBtn2");
+    const signedInAs = $("signedInAs");
+    const adminEmail = $("adminEmail");
+    const pendingCount = $("pendingCount");
+    const approvedCount = $("approvedCount");
+    const pendingList = $("pendingList");
+    const approvedList = $("approvedList");
+    const toastEl = $("toast");
+
+    // ============================================================
+    // Helpers
+    // ============================================================
+    const SVG_NS = "http://www.w3.org/2000/svg";
+    const STAR_PATH =
+      "M12 2.5l2.95 5.98 6.6.96-4.78 4.66 1.13 6.57L12 17.6l-5.9 3.1 1.13-6.57L2.45 9.44l6.6-.96L12 2.5z";
+
+    function makeStar(filled = false) {
+      const svg = document.createElementNS(SVG_NS, "svg");
+      svg.setAttribute("class", "star" + (filled ? " is-filled" : ""));
+      svg.setAttribute("viewBox", "0 0 24 24");
+      svg.setAttribute("aria-hidden", "true");
+      const path = document.createElementNS(SVG_NS, "path");
+      path.setAttribute("d", STAR_PATH);
+      svg.appendChild(path);
+      return svg;
+    }
+
+    function renderStars(container, rating) {
+      container.innerHTML = "";
+      for (let i = 1; i <= 5; i++) {
+        container.appendChild(makeStar(i <= rating));
+      }
+    }
+
+    function relativeTime(ts) {
+      if (!ts) return "";
+      const diff = Date.now() - ts;
+      const s = Math.floor(diff / 1000);
+      if (s < 60) return "just now";
+      const m = Math.floor(s / 60);
+      if (m < 60) return `${m}m ago`;
+      const h = Math.floor(m / 60);
+      if (h < 24) return `${h}h ago`;
+      const d = Math.floor(h / 24);
+      if (d < 7) return `${d}d ago`;
+      const w = Math.floor(d / 7);
+      if (w < 4) return `${w}w ago`;
+      const mo = Math.floor(d / 30);
+      if (mo < 12) return `${mo}mo ago`;
+      return `${Math.floor(d / 365)}y ago`;
+    }
+
+    let toastTimer = null;
+    function toast(msg, isError = false) {
+      toastEl.textContent = msg;
+      toastEl.classList.toggle("is-error", isError);
+      toastEl.classList.add("is-visible");
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => toastEl.classList.remove("is-visible"), 2400);
+    }
+
+    function showView(name) {
+      [loadingView, signedOutView, unauthorizedView, adminView].forEach((v) => {
+        v.hidden = true;
+      });
+      if (name === "loading") loadingView.hidden = false;
+      if (name === "signedOut") signedOutView.hidden = false;
+      if (name === "unauthorized") unauthorizedView.hidden = false;
+      if (name === "admin") adminView.hidden = false;
+    }
+
+    // ============================================================
+    // Auth
+    // ============================================================
+    signInBtn.addEventListener("click", async () => {
+      try {
+        await signInWithPopup(auth, provider);
+      } catch (err) {
+        console.error("Sign-in failed:", err);
+        toast("Sign-in failed. " + (err.message || err.code), true);
+      }
+    });
+
+    const doSignOut = () => signOut(auth).catch(console.error);
+    signOutBtn1.addEventListener("click", doSignOut);
+    signOutBtn2.addEventListener("click", doSignOut);
+
+    let unsubscribePending = null;
+    let unsubscribeApproved = null;
+
+    function tearDownListeners() {
+      if (unsubscribePending) unsubscribePending();
+      if (unsubscribeApproved) unsubscribeApproved();
+      unsubscribePending = null;
+      unsubscribeApproved = null;
+    }
+
+    onAuthStateChanged(auth, (user) => {
+      tearDownListeners();
+      document.title = "Moderate · How's My Driving";
+
+      if (!user) {
+        showView("signedOut");
+        return;
+      }
+      if (user.email !== ADMIN_EMAIL) {
+        signedInAs.textContent = user.email || "(no email)";
+        showView("unauthorized");
+        return;
+      }
+
+      adminEmail.textContent = user.email;
+      showView("admin");
+      attachListeners();
+    });
+
+    // ============================================================
+    // Listeners (only run when authed as admin)
+    // ============================================================
+    function attachListeners() {
+      const pq = query(pendingRef, orderByChild("timestamp"));
+      unsubscribePending = onValue(
+        pq,
+        (snap) => {
+          const items = [];
+          snap.forEach((child) => items.push({ id: child.key, ...child.val() }));
+          items.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+          renderPending(items);
+        },
+        (err) => {
+          console.error("Pending read failed:", err);
+          pendingList.innerHTML = '<div class="empty-state">Could not load pending. Check rules & admin email.</div>';
+        }
+      );
+
+      const aq = query(approvedRef, orderByChild("timestamp"));
+      unsubscribeApproved = onValue(
+        aq,
+        (snap) => {
+          const items = [];
+          snap.forEach((child) => items.push({ id: child.key, ...child.val() }));
+          // Sort: pinned first, then newest
+          items.sort((a, b) => {
+            if (a.pinned && !b.pinned) return -1;
+            if (!a.pinned && b.pinned) return 1;
+            return (b.timestamp || 0) - (a.timestamp || 0);
+          });
+          renderApproved(items);
+        },
+        (err) => {
+          console.error("Approved read failed:", err);
+          approvedList.innerHTML = '<div class="empty-state">Could not load approved.</div>';
+        }
+      );
+    }
+
+    // ============================================================
+    // Rendering
+    // ============================================================
+    function renderPending(items) {
+      pendingCount.textContent = items.length;
+      pendingCount.classList.toggle("has-pending", items.length > 0);
+      document.title = items.length
+        ? `(${items.length}) Moderate · How's My Driving`
+        : "Moderate · How's My Driving";
+
+      if (items.length === 0) {
+        pendingList.innerHTML = '<div class="empty-state is-good">✓ All caught up — no pending reviews.</div>';
+        return;
+      }
+
+      pendingList.innerHTML = "";
+      items.forEach((r) => pendingList.appendChild(buildCard(r, "pending")));
+    }
+
+    function renderApproved(items) {
+      approvedCount.textContent = items.length;
+
+      if (items.length === 0) {
+        approvedList.innerHTML = '<div class="empty-state">No approved reviews yet.</div>';
+        return;
+      }
+
+      approvedList.innerHTML = "";
+      items.forEach((r) => approvedList.appendChild(buildCard(r, "approved")));
+    }
+
+    function buildCard(r, kind) {
+      const card = document.createElement("article");
+      card.className = "review";
+      if (kind === "pending") card.classList.add("review--pending");
+      if (r.pinned) card.classList.add("review--pinned");
+
+      // Top: stars + time
+      const top = document.createElement("div");
+      top.className = "review__top";
+      const stars = document.createElement("div");
+      stars.className = "review__stars";
+      renderStars(stars, r.rating || 0);
+      const time = document.createElement("span");
+      time.className = "review__time";
+      time.textContent = relativeTime(r.timestamp);
+      top.appendChild(stars);
+      top.appendChild(time);
+      card.appendChild(top);
+
+      // Text
+      if (r.text) {
+        const text = document.createElement("p");
+        text.className = "review__text";
+        text.textContent = r.text;
+        card.appendChild(text);
+      }
+
+      // Name
+      const name = document.createElement("div");
+      const isAnon = !r.name || !r.name.trim();
+      name.className = "review__name" + (isAnon ? " is-anon" : "");
+      name.textContent = isAnon ? "— Anonymous" : `— ${r.name.trim()}`;
+      card.appendChild(name);
+
+      // Actions
+      const actions = document.createElement("div");
+      actions.className = "review__actions";
+
+      if (kind === "pending") {
+        const rejectBtn = actionButton("Reject", "reject", () => doReject(r, rejectBtn));
+        const approveBtn = actionButton("✓ Approve", "approve", () => doApprove(r, approveBtn));
+        actions.appendChild(rejectBtn);
+        actions.appendChild(approveBtn);
+      } else {
+        const pinBtn = actionButton(
+          r.pinned ? "📌 Pinned" : "📌 Pin",
+          "pin",
+          () => doTogglePin(r, pinBtn)
+        );
+        if (r.pinned) pinBtn.classList.add("is-pinned");
+        const deleteBtn = actionButton("Delete", "delete", () => doDelete(r, deleteBtn));
+        actions.appendChild(pinBtn);
+        actions.appendChild(deleteBtn);
+      }
+
+      card.appendChild(actions);
+      return card;
+    }
+
+    function actionButton(label, kind, onClick) {
+      const btn = document.createElement("button");
+      btn.className = `action-btn action-btn--${kind}`;
+      btn.textContent = label;
+      btn.addEventListener("click", onClick);
+      return btn;
+    }
+
+    // ============================================================
+    // Actions
+    // ============================================================
+    async function doApprove(r, btn) {
+      btn.disabled = true;
+      try {
+        // Copy to approved with new id, then remove from pending.
+        // Not atomic, but order is safe: if push succeeds and remove
+        // fails, the review just appears twice (once approved, once
+        // still pending) — fixable on next click. If push fails,
+        // pending entry is untouched.
+        const { id, ...payload } = r;
+        await push(approvedRef, {
+          rating: payload.rating,
+          text: payload.text || "",
+          name: payload.name || "",
+          timestamp: payload.timestamp,
+        });
+        await remove(ref(db, `reviews/pending/${id}`));
+        toast("Approved");
+      } catch (err) {
+        console.error(err);
+        toast("Approve failed: " + (err.message || err.code), true);
+        btn.disabled = false;
+      }
+    }
+
+    async function doReject(r, btn) {
+      if (!confirm("Reject and delete this pending review?")) return;
+      btn.disabled = true;
+      try {
+        await remove(ref(db, `reviews/pending/${r.id}`));
+        toast("Rejected");
+      } catch (err) {
+        console.error(err);
+        toast("Reject failed: " + (err.message || err.code), true);
+        btn.disabled = false;
+      }
+    }
+
+    async function doDelete(r, btn) {
+      if (!confirm("Permanently delete this approved review?")) return;
+      btn.disabled = true;
+      try {
+        await remove(ref(db, `reviews/approved/${r.id}`));
+        toast("Deleted");
+      } catch (err) {
+        console.error(err);
+        toast("Delete failed: " + (err.message || err.code), true);
+        btn.disabled = false;
+      }
+    }
+
+    async function doTogglePin(r, btn) {
+      btn.disabled = true;
+      try {
+        await update(ref(db, `reviews/approved/${r.id}`), {
+          pinned: !r.pinned,
+        });
+        toast(r.pinned ? "Unpinned" : "Pinned");
+      } catch (err) {
+        console.error(err);
+        toast("Pin failed: " + (err.message || err.code), true);
+        btn.disabled = false;
+      }
+    }
+  </script>
+</body>
+</html>
