@@ -697,7 +697,7 @@
       try {
         const app = initializeApp(firebaseConfig);
         db = getDatabase(app);
-        reviewsRef = ref(db, "reviews");
+        reviewsRef = ref(db, "reviews/approved");
         firebaseReady = true;
       } catch (err) {
         console.error("Firebase init failed:", err);
@@ -997,10 +997,8 @@
       submitBtn.textContent = "Submitting…";
 
       try {
-        await push(reviewsRef, {
-          rating,
-          text,
-          name,
+        await push(ref(db, "reviews/pending"), {
+          rating, text, name,
           timestamp: serverTimestamp(),
         });
         localStorage.setItem("lastReviewAt", String(Date.now()));
