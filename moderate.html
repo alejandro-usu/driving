@@ -570,6 +570,7 @@
       unsubscribeApproved = onValue(
         aq,
         (snap) => {
+          console.log("approved snapshot children:", snap.numChildren());
           const items = [];
           snap.forEach((child) => items.push({ id: child.key, ...child.val() }));
           // Sort: pinned first, then newest
